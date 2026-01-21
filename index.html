@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل الديون الذكي</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="https://c.top4top.io/p_3673vamlv1.jpg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <div id="lock-screen" class="glass-bg">
+        <div class="login-content">
+            <img src="https://c.top4top.io/p_3673vamlv1.jpg" style="width: 100px; border-radius: 50%; box-shadow: 0 0 20px rgba(0,0,0,0.2); margin-bottom: 20px;">
+            <h1 id="brand-title">🔒 سجل الديون</h1>
+            <div id="login-inputs">
+                <p>أدخل اسم المتجر وكلمة المرور</p>
+                <input type="text" id="storeNameInput" placeholder="اسم متجرك / المجمع">
+                <input type="password" id="adminPassInput" placeholder="كلمة المرور">
+                <button class="btn btn-success full-width" onclick="window.checkAdminLogin()">دخول</button>
+            </div>
+            <h1 id="welcome-brand" class="hidden" style="color: #fff; font-size: 2.5rem; text-shadow: 0 0 10px rgba(0,0,0,0.5);"></h1>
+            <p id="loginMsg" style="color: salmon; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="install-popup" class="modal hidden" style="display: flex;">
+        <div class="card glass modal-content" style="text-align: center;">
+            <img src="https://c.top4top.io/p_3673vamlv1.jpg" style="width: 80px; border-radius: 20px; margin-bottom: 10px;">
+            <h3>تثبيت التطبيق</h3>
+            <p>لتجربة أفضل، قم بتثبيت التطبيق على هاتفك الآن.</p>
+            <div class="flex flex-between">
+                <button class="btn btn-danger" onclick="document.getElementById('install-popup').classList.add('hidden')">تخطي</button>
+                <button class="btn btn-primary" id="installBtnPopup">تثبيت الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <div class="content-area">
+            
+            <div id="tab-dashboard" class="tab-content active-tab">
+                <header class="card glass flex flex-between no-print">
+                    <h3 id="headerStoreName">سجل الديون</h3>
+                    <div class="flex">
+                        <button class="btn btn-sm btn-primary" id="installBtn" style="display:none">📲 تثبيت</button>
+                        <button class="btn btn-sm btn-danger" onclick="window.logout()">خروج</button>
+                    </div>
+                </header>
+
+                <div class="container">
+                    <div class="card glass flex flex-between">
+                        <div>
+                            <small>إجمالي الديون</small>
+                            <h2 style="color: var(--danger)" id="totalDebt">0.00</h2>
+                        </div>
+                        <div>
+                            <small>الزبائن</small>
+                            <h3 id="customerCount">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="flex mb-2">
+                        <input type="text" id="searchInput" placeholder="🔍 بحث (اسم، هاتف)..." onkeyup="window.filterCustomers()">
+                        <button class="btn btn-success" onclick="window.showModal('modal-add-customer')">+ زبون</button>
+                    </div>
+                    
+                    <div class="flex mb-2" style="overflow-x: auto;">
+                        <button class="btn btn-sm btn-primary glass-btn" onclick="window.sortCustomers('name')">أبجدي</button>
+                        <button class="btn btn-sm btn-primary glass-btn" onclick="window.sortCustomers('balance')">الأعلى ديناً</button>
+                    </div>
+
+                    <div id="customersList"></div>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="tab-content hidden">
+                <div class="container" style="margin-top: 20px;">
+                    <div class="card glass">
+                        <h3>⚙️ الإعدادات</h3>
+                        
+                        <label>رقم هاتف المتجر (للتواصل):</label>
+                        <div class="flex">
+                            <input type="text" id="adminPhoneInput" placeholder="مثال: 9647700000000" style="direction: ltr; text-align: right;">
+                        </div>
+                        <button class="btn btn-success full-width mb-2" onclick="window.saveStoreSettings()">حفظ الرقم</button>
+                        <hr>
+
+                        <button class="btn btn-primary full-width mb-2" onclick="window.exportData()">📤 نسخة احتياطية (JSON)</button>
+                        <button class="btn btn-success full-width mb-2" onclick="document.getElementById('importFile').click()">📥 استرجاع نسخة</button>
+                        <input type="file" id="importFile" class="hidden" onchange="window.importData(this)">
+                        <hr>
+                        <label>تغيير كلمة المرور:</label>
+                        <input type="password" id="newAdminPass" placeholder="كلمة المرور الجديدة">
+                        <button class="btn btn-danger" onclick="window.changeAdminPass()">حفظ الكلمة الجديدة</button>
+                        <hr>
+                        <a href="https://t.me/am_an12" target="_blank" class="btn btn-primary full-width mb-2">✈️ الدعم الفني (Telegram)</a>
+                        <button class="btn btn-danger full-width" onclick="window.clearAllData()">⚠️ تصفير التطبيق</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-customer" class="hidden glass-overlay">
+                <div class="container">
+                    <button class="btn btn-sm btn-primary no-print mb-2" onclick="window.goHome()">🔙 رجوع</button>
+                    <div class="card glass" style="text-align: center;">
+                        <h2 id="custName">اسم الزبون</h2>
+                        <p id="custPhone">077xxxxxxx</p>
+                        <div class="balance-display" id="custBalance">0.00</div>
+                        
+                        <a id="btnWhatsapp" href="#" target="_blank" class="btn btn-success full-width mb-2 hidden">💬 مراسلة عبر واتساب</a>
+
+                        <div class="flex flex-between no-print" style="justify-content: center;">
+                            <button class="btn btn-danger" onclick="window.openTransModal('debt')">➕ دين</button>
+                            <button class="btn btn-success" onclick="window.openTransModal('payment')">💰 تسديد</button>
+                            <button class="btn btn-primary" onclick="window.openTransModal('sale')">🛒 فاتورة</button>
+                        </div>
+                        <div class="mt-2 no-print">
+                            <small>رابط كشف الحساب:</small>
+                            <div class="flex">
+                                <input type="text" id="custLink" readonly onclick="this.select()">
+                                <button class="btn btn-sm btn-primary" onclick="window.copyLink()">نسخ</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-danger full-width mt-2" onclick="window.deleteCustomerBtn()">🗑️ حذف الزبون نهائياً</button>
+                    </div>
+
+                    <div class="card glass">
+                        <div class="flex flex-between">
+                            <h3>سجل العمليات</h3>
+                            <button class="btn btn-sm btn-primary no-print" onclick="window.print()">🖨️ طباعة</button>
+                        </div>
+                        <div id="transactionsList"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <nav class="bottom-nav glass no-print">
+            <button class="nav-item active" onclick="window.switchTab('tab-dashboard', this)">
+                <span>🏠</span>
+                <small>الرئيسية</small>
+            </button>
+            <button class="nav-item" onclick="window.showModal('modal-add-customer')">
+                <span>➕</span>
+                <small>إضافة</small>
+            </button>
+            <button class="nav-item" onclick="window.switchTab('tab-settings', this)">
+                <span>⚙️</span>
+                <small>الإعدادات</small>
+            </button>
+        </nav>
+    </div>
+
+    <div id="modal-add-customer" class="modal hidden">
+        <div class="card glass modal-content">
+            <h3>زبون جديد</h3>
+            <input type="text" id="newCustName" placeholder="الاسم الكامل">
+            <input type="tel" id="newCustPhone" placeholder="رقم الهاتف">
+            <input type="tel" id="newCustWhatsapp" placeholder="رقم الواتساب (مع مفتاح الدولة 964..)">
+            
+            <label>العملة:</label>
+            <select id="newCustCurrency">
+                <option value="IQD">دينار عراقي (IQD)</option>
+                <option value="USD">دولار أمريكي ($)</option>
+            </select>
+
+            <input type="password" id="newCustPass" placeholder="كلمة سر الزبون (اختياري)">
+            <div class="flex flex-between">
+                <button class="btn btn-danger" onclick="window.closeModal('modal-add-customer')">إلغاء</button>
+                <button class="btn btn-success" onclick="window.addCustomer()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-transaction" class="modal hidden">
+        <div class="card glass modal-content">
+            <h3 id="transTitle">عملية جديدة</h3>
+            
+            <label>المادة / الصنف (اختياري):</label>
+            <input type="text" id="transItem" placeholder="مثال: آيفون 13، تمن، سكر...">
+            
+            <input type="number" id="transAmount" placeholder="المبلغ">
+            <textarea id="transNote" placeholder="ملاحظات إضافية"></textarea>
+            <input type="date" id="transDate">
+            <div class="flex flex-between">
+                <button class="btn btn-danger" onclick="window.closeModal('modal-transaction')">إلغاء</button>
+                <button class="btn btn-success" onclick="window.saveTransaction()">حفظ العملية</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+    <script src="pwa.js"></script>
+    <script>
+        if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+        // Install Popup Logic
+        setTimeout(() => {
+            if(!window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('install-popup').classList.remove('hidden');
+            } else {
+                document.getElementById('install-popup').classList.add('hidden');
+            }
+        }, 2000);
+        
+        const installBtnPopup = document.getElementById('installBtnPopup');
+        if(installBtnPopup) {
+            installBtnPopup.addEventListener('click', () => {
+                const installBtn = document.getElementById('installBtn');
+                if(installBtn) installBtn.click();
+                document.getElementById('install-popup').classList.add('hidden');
+            });
+        }
+    </script>
+</body>
+</html>
