@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كشف حسابي</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="https://c.top4top.io/p_3673vamlv1.jpg">
+    <style>
+        body { background: #f0f2f5; padding: 20px; }
+        .secure-badge { text-align: center; margin: 20px; color: #777; font-size: 0.8em; }
+        .alert-box { background: #ffebee; color: #c62828; padding: 15px; border-radius: 10px; border: 1px solid #ef9a9a; margin-bottom: 15px; text-align: center; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 600px;">
+        
+        <div id="cust-login" class="card glass" style="margin-top: 50px;">
+            <div style="text-align: center;">
+                <img src="https://c.top4top.io/p_3673vamlv1.jpg" style="width: 80px; border-radius: 50%; margin-bottom: 10px;">
+            </div>
+            <h2 style="text-align: center;">👤 كشف حساب</h2>
+            <p style="text-align: center;">أدخل كلمة المرور الخاصة بك</p>
+            <input type="password" id="custPassInput" placeholder="كلمة المرور">
+            <button class="btn btn-primary full-width" onclick="window.verifyCustomer()">دخول</button>
+            <p id="msg" style="color:red; text-align:center;"></p>
+        </div>
+
+        <div id="cust-view" class="hidden">
+            <div id="paymentAlert" class="alert-box">
+                <strong>⚠️ تنبيه:</strong><br>
+                يرجى مراجعة المتجر لتسديد الفاتورة المستحقة.
+            </div>
+
+            <div class="card glass" style="text-align: center; border-top: 5px solid var(--primary);">
+                <h2 id="cName">...</h2>
+                <small>الرصيد الحالي</small>
+                <div class="balance-display" id="cBalance" style="color: var(--danger)">0.00</div>
+            </div>
+
+            <div class="card glass">
+                <h3>آخر العمليات</h3>
+                <div id="cTransList"></div>
+            </div>
+
+            <a id="waLink" href="#" target="_blank" class="btn btn-success full-width" style="text-decoration:none; justify-content:center;">
+                📱 تواصل واتساب مع المتجر
+            </a>
+            
+            <div class="secure-badge">🔒 اتصال آمن - بياناتك محفوظة</div>
+        </div>
+    </div>
+
+    <script type="module" src="customer.js"></script>
+</body>
+</html>
